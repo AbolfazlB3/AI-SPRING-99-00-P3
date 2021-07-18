@@ -1,7 +1,3 @@
 
-
-from main import check_complete
-
-
-def check_complete():
-    return None
+def check_complete(A, n):
+    return (len(A.keys()) == n*n)

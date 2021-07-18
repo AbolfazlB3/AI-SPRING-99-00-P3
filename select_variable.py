@@ -1,4 +1,6 @@
+
 def select_variable(A, domains, n):
+
     minimum = 3
     index = -1
     for d in domains.keys():
@@ -6,4 +8,5 @@ def select_variable(A, domains, n):
         if(tmp < minimum):
             minimum = tmp
             index = d
+
     return d
