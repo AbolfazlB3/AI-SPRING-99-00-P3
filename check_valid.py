@@ -27,7 +27,7 @@ def check3(A, index, n, val, X, Y):
 def check_full_row(A, index, n):
     row = []
     for i in range(n):
-        tmp = A.get(X_i(index), i, n)
+        tmp = A.get(I(X_i(index), i, n))
         if(tmp == None):
             return False
         row.append(tmp)
@@ -36,7 +36,7 @@ def check_full_row(A, index, n):
 def check_full_column(A, index, n):
     column = []
     for i in range(n):
-        tmp = A.get(i, Y_i(index), n)
+        tmp = A.get(I(i, Y_i(index), n))
         if(tmp == None):
             return False
         column.append(tmp)
