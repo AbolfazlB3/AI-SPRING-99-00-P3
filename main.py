@@ -1,7 +1,8 @@
-def check_complete(): pass
-def select_variable(): pass
-def value_ordering(): pass
-def forward_checking(): pass
+
+from check_complete import *
+from select_variable import *
+from value_ordering import *
+from forward_checking import *
 
 
 def backtrack(A, domains):
