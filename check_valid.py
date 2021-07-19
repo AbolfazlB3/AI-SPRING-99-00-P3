@@ -89,3 +89,83 @@ def check_valid(A, index, n, debug=False):
             print("colviol")
         return False
     return True
+
+def count(A, L, flag, n):
+    r = 0
+    w = 0
+    if(flag == "R"):
+        for i in range(n):
+            if(0 == A.get(L + i)):
+                r += 1
+            if(1 == A.get(L + i)):
+                w += 1
+    else:
+        for i in range(n):
+            if(0 == A.get(L + i*n)):
+                r += 1
+            if(1 == A.get(L + i*n)):
+                w += 1
+    return (r <= n * 0.5 and w <= n * 0.5)
+
+def check2(A, X1, Y1, index1, X2, Y2, index2, flag, val, n):
+    if(flag == "R"):
+        if(abs(Y2 - Y1) == 2):
+            if(val == A.get((index1+index2)/2)):
+                return False
+        if(abs(Y2 - Y1) == 1):
+            Y0 = min(Y1, Y2) - 1
+            Y3 = max(Y1, Y2) + 1
+            if(Y0 > -1):
+                if(A.get(I(X1, Y0, n)) == val):
+                    return False
+            if(Y3 < n):
+                if(A.get(I(X1, Y3, n)) == val):
+                    return False
+    if(flag == "L"):
+        if(abs(X2 - X1) == 2):
+            if(val == A.get((index1+index2)/2)):
+                return False
+        if(abs(X2 - X1) == 1):
+            X0 = min(X1, X2) - 1
+            X3 = max(X1, X2) + 1
+            if(X0 > -1):
+                if(A.get(I(X0, Y1, n)) == val):
+                    return False
+            if(X3 < n):
+                if(A.get(I(X3, Y2, n)) == val):
+                    return False
+    return True
+
+def check_valid2(A, index1, index2, n, debug=False):
+    X1 = X_i(index1, n)
+    Y1 = Y_i(index1, n)
+    val1 = A.get(index1)
+    X2 = X_i(index2, n)
+    Y2 = Y_i(index2, n)
+    val2 = A.get(index2)
+    C1 = check_full_column(A, Y1, n)
+    C2 = check_full_column(A, Y2, n)
+    R1 = check_full_row(A, X1, n)
+    R2 = check_full_row(A, X2, n)
+    if(X1 != X2 and Y1 != Y2):
+        if(C1 == C2 and C1 != False):
+            return False
+        if(R1 == R2 and R1 != False):
+            return False
+    if(X1 == X2 and Y1 != Y2):
+        if(C1 == C2 and C1 != False):
+            return False
+        if(count(A, X2, "R", n) == False):
+            return False
+        if(val1 == val2):
+            if(check2(A, X1, Y1, index1, X2, Y2, index2, "R", val1, n) == False):
+                return False
+    if(X1 != X2 and Y1 == Y2):
+        if(R1 == R2 and R1 != False):
+            return False
+        if(count(A, Y2, "L", n) == False):
+            return False
+        if(val1 == val2):
+            if(check2(A, X1, Y1, index1, X2, Y2, index2, "L", val1, n) == False):
+                return False
+    return True
