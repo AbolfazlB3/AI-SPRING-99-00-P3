@@ -21,8 +21,10 @@ def forward_checking(A, domains, n):
         for v in domains[X]:
 
             A[X] = v
-            if(check_valid(A, X, n)):
+            valid = check_valid(A, X, n)
+            if valid:
                 domain.append(v)
+            # print("forward checking: ", A, X, valid)
             A.pop(X, None)
 
         res[X] = domain
