@@ -1,7 +1,7 @@
 from check_valid import check_valid
 
 
-def forward_checking(A, domains, n):
+def forward_checking(A, domains, n, debug=False):
 
     res = {}
 
@@ -21,10 +21,11 @@ def forward_checking(A, domains, n):
         for v in domains[X]:
 
             A[X] = v
-            valid = check_valid(A, X, n)
+            valid = check_valid(A, X, n, debug)
             if valid:
                 domain.append(v)
-            # print("forward checking: ", A, X, valid)
+            if debug and not valid:
+                print("forward checking: ", X, valid)
             A.pop(X, None)
 
         res[X] = domain

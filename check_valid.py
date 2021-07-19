@@ -50,25 +50,28 @@ def check_full_column(A, colind, n):
     return column
 
 
-def check_valid(A, index, n):
+def check_valid(A, index, n, debug=False):
     X = X_i(index, n)
     Y = Y_i(index, n)
     val = A.get(index)
     if(check3(A, index, n, val, X, Y) == False):
-        # print("check3")
+        if debug:
+            print("check3")
         return False
-    row = check_full_row(A, index, n)
-    column = check_full_column(A, index, n)
+    row = check_full_row(A, X, n)
+    column = check_full_column(A, Y, n)
     if(row != False):
         for i in range(n):
             if(i != X and row == check_full_row(A, i, n)):
-                #print("row eq", i, X)
-                #print(row, check_full_row(A, i, n))
+                if debug:
+                    print("row eq", i, X)
+                    print(row, check_full_row(A, i, n))
                 return False
     if(column != False):
         for i in range(n):
             if(i != Y and column == check_full_column(A, i, n)):
-                #print("col eq")
+                if debug:
+                    print("col eq")
                 return False
     r = 0
     w = 0
@@ -78,9 +81,11 @@ def check_valid(A, index, n):
         if(val == A.get(I(i, Y, n))):
             w += 1
     if(r > n // 2):
-        # print("rowviol")
+        if debug:
+            print("rowviol")
         return False
     if(w > n // 2):
-        # print("colviol")
+        if debug:
+            print("colviol")
         return False
     return True

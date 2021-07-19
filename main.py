@@ -9,36 +9,48 @@ from os import walk
 import os
 
 
-def backtrack(A, domains, n):
+cnt = 0
 
-    #print("backtrack1: ", A, domains)
-    print_state(A, n)
-    D = domains.copy()
-    for X in D.keys():
-        D[X] = "-" if A.get(X) != None else len(D[X])
-    print_state(D, n)
-    print()
+
+def backtrack(A, domains, n, log=False):
+    global cnt
+    cnt += 1
+    debug = False and log
+
+    if debug:
+        print("cnt:", cnt)
+        print_state(A, n)
+        D = domains.copy()
+        for Y in D.keys():
+            D[Y] = "-" if A.get(Y) != None else len(D[Y])
+        print_state(D, n)
+        print()
 
     if(check_complete(A, n)):
         return A.copy()
 
     X = select_variable(A, domains, n)  # MRV
-    D = value_ordering(A, domains, X, n)  # LCV
+    D = value_ordering(A, domains, X, n, debug)  # LCV
 
-    #print("backtrack2: ", X, D)
+    if debug:
+        print("backtrack: ", len(D), X, D)
+        print(domains[1])
 
     for vd in D:
 
         v = vd[0]
         new_domains = vd[1]
 
-        ok = True
+        if(debug):
+            print("val:", v)
+            print(new_domains)
+            print()
 
+        ok = True
         for Y in new_domains.keys():
             if len(new_domains[Y]) == 0:
                 ok = False
                 break
-
         if ok == False:
             continue
 
