@@ -8,7 +8,7 @@ IMA = "./images/"
 
 class GUI:
 
-    def __init__(self, action, n):
+    def __init__(self, action, n, label="The Game!"):
         self.action = action
         self.n = n
         display_h = n*36
@@ -16,6 +16,7 @@ class GUI:
         pg.init()
         self.clk = pg.time.Clock()
         self.gd = pg.display.set_mode((display_w, display_h))
+        pg.display.set_caption(label)
         self.assets = {
             "map": pg.image.load(IMA + "MAP.png"),
             "1": pg.image.load(IMA + "1.png"),

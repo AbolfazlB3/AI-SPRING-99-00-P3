@@ -90,14 +90,15 @@ def check_valid(A, index, n, debug=False):
         return False
     return True
 
+
 def count(A, L, flag, n):
     r = 0
     w = 0
     if(flag == "R"):
         for i in range(n):
-            if(0 == A.get(L + i)):
+            if(0 == A.get(L*n + i)):
                 r += 1
-            if(1 == A.get(L + i)):
+            if(1 == A.get(L*n + i)):
                 w += 1
     else:
         for i in range(n):
@@ -106,6 +107,7 @@ def count(A, L, flag, n):
             if(1 == A.get(L + i*n)):
                 w += 1
     return (r <= n * 0.5 and w <= n * 0.5)
+
 
 def check2(A, X1, Y1, index1, X2, Y2, index2, flag, val, n):
     if(flag == "R"):
@@ -135,6 +137,7 @@ def check2(A, X1, Y1, index1, X2, Y2, index2, flag, val, n):
                 if(A.get(I(X3, Y2, n)) == val):
                     return False
     return True
+
 
 def check_valid2(A, index1, index2, n, debug=False):
     X1 = X_i(index1, n)

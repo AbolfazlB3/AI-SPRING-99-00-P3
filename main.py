@@ -168,7 +168,7 @@ def backtrack2(A, domains, n, frames, log=False):
     for vd in D:
 
         v = vd[0]
-        new_domains = mac(A, domains, X, v, n)
+        new_domains = mac(A, domains, X, v, n, debug)
 
         if new_domains == False:
             continue
@@ -187,7 +187,7 @@ def backtrack2(A, domains, n, frames, log=False):
             continue
 
         A[X] = v
-        result = backtrack(A, new_domains, n, frames, log)
+        result = backtrack2(A, new_domains, n, frames, log)
         A.pop(X, None)
 
         if result != "failure":
@@ -207,8 +207,9 @@ def main(R):
         frames = []
         res = backtrack2(A, D, n, frames)
         print_result(res, n)
+        print(len(frames))
         print()
-        GUI(frames, n)
+        GUI(frames, n, level[0])
 
 
 main(2)
