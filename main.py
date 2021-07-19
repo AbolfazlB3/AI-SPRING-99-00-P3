@@ -6,9 +6,9 @@ from value_ordering import *
 from forward_checking import *
 
 import sys
-from os import walk
+from os import times, walk
 import os
-
+import time
 
 cnt = 0
 
@@ -156,7 +156,7 @@ def backtrack2(A, domains, n, frames, log=False):
         print()
 
     if(check_complete(A, n)):
-        return A.copy()
+        return A.copy() if check_complete2(A, n) else "failure"
 
     X = select_variable(A, domains, n)  # MRV
     D = value_ordering(A, domains, X, n, debug)  # LCV
@@ -196,20 +196,54 @@ def backtrack2(A, domains, n, frames, log=False):
     return "failure"
 
 
-def main(R):
-    sys.setrecursionlimit(100000000)
-    levels = read()
-    for level in levels:
+def solve_forward_checking(A, D, level, n, log=True):
+    t1 = time.time_ns()
+    if log:
         print(level[0] + ":\n")
-        Map, n = extract_map(level[1])
-        A, D = extract_dics(Map, n, R)
         print_state(A, n)
-        frames = []
-        res = backtrack2(A, D, n, frames)
+    frames = []
+    res = backtrack(A, D, n, frames)
+    if log:
         print_result(res, n)
         print(len(frames))
         print()
         GUI(frames, n, level[0])
+    t2 = time.time_ns()
+    return len(frames), t2-t1
+
+
+def solve_mac(A, D, level, n, log=True):
+    t1 = time.time_ns()
+    if log:
+        print(level[0] + ":\n")
+        print_state(A, n)
+    frames = []
+    res = backtrack2(A, D, n, frames)
+    if log:
+        print_result(res, n)
+        print(len(frames))
+        print()
+        GUI(frames, n, level[0])
+    t2 = time.time_ns()
+    return len(frames), t2-t1
+
+
+def main(R):
+    sys.setrecursionlimit(100000000)
+    levels = read()
+    for level in levels:
+        Map, n = extract_map(level[1])
+        A, D = extract_dics(Map, n, R)
+        D = forward_checking(A, D, n)
+
+        n1, t1 = solve_forward_checking(A, D, level, n, False)
+
+        n2, t2 = solve_mac(A, D, level, n, False)
+
+        print(level[0], ":")
+        print("Forward Checking:          ", n1, "frames ", t1/1000000, "ms")
+        print("Maitaining Arc Consistensy:", n2,
+              "frames ", t2/1000000, "ms\n\n")
 
 
 main(2)

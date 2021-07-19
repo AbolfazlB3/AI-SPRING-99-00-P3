@@ -3,7 +3,7 @@ from forward_checking import forward_checking
 
 def value_ordering(A, domains, X, n, debug=False):
     res = []
-    for v in domains[X]:
+    for v in domains.get(X):
         A[X] = v
         new_domains = forward_checking(A, domains, n, debug)
         res.append((v, new_domains))
