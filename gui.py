@@ -5,6 +5,7 @@ STEP = 18
 # images address
 IMA = "./images/"
 
+
 class GUI:
 
     def __init__(self, action, n):
@@ -78,17 +79,15 @@ class GUI:
         pg.quit()
 
     def draw(self, i):
-        L = 18
-        F = 18
+        L = 10
+        F = 10
         self.gd.blit(self.Map, (0, 0))
         for k in range(self.n):
             for j in range(self.n):
                 if(self.action[i][j][k] == "1"):
                     one = self.assets["1"]
-                    self.gd.blit(one, (L + k * 36 , F + j * 36))
+                    self.gd.blit(one, (L + k * 36, F + j * 36))
                 if(self.action[i][j][k] == "0"):
                     zero = self.assets["0"]
-                    self.gd.blit(zero,(L + k * 36 , F + j * 36))
+                    self.gd.blit(zero, (L + k * 36, F + j * 36))
         pg.display.update()
-
-

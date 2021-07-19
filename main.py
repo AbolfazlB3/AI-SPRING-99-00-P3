@@ -1,4 +1,5 @@
-
+from mac import mac
+from gui import GUI
 from check_complete import *
 from select_variable import *
 from value_ordering import *
@@ -12,10 +13,23 @@ import os
 cnt = 0
 
 
-def backtrack(A, domains, n, log=False):
+def toFrame(A, n):
+    res = []
+    for i in range(n):
+        row = []
+        for j in range(n):
+            v = A.get(i*n+j)
+            row.append("-" if v == None else str(v))
+        res.append(row)
+    return res
+
+
+def backtrack(A, domains, n, frames, log=False):
     global cnt
     cnt += 1
     debug = False and log
+
+    frames.append(toFrame(A, n))
 
     if debug:
         print("cnt:", cnt)
@@ -55,16 +69,13 @@ def backtrack(A, domains, n, log=False):
             continue
 
         A[X] = v
-        result = backtrack(A, new_domains, n)
+        result = backtrack(A, new_domains, n, frames, log)
         A.pop(X, None)
 
         if result != "failure":
             return result
 
     return "failure"
-
-
-sys.setrecursionlimit(10000000)
 
 
 def read():
@@ -128,47 +139,76 @@ def extract_dics(Map, n, R):
     return A, D
 
 
+def backtrack2(A, domains, n, frames, log=False):
+    global cnt
+    cnt += 1
+    debug = False and log
+
+    frames.append(toFrame(A, n))
+
+    if debug:
+        print("cnt:", cnt)
+        print_state(A, n)
+        D = domains.copy()
+        for Y in D.keys():
+            D[Y] = "-" if A.get(Y) != None else len(D[Y])
+        print_state(D, n)
+        print()
+
+    if(check_complete(A, n)):
+        return A.copy()
+
+    X = select_variable(A, domains, n)  # MRV
+    D = value_ordering(A, domains, X, n, debug)  # LCV
+
+    if debug:
+        print("backtrack: ", len(D), X, D)
+        print(domains[1])
+
+    for vd in D:
+
+        v = vd[0]
+        new_domains = mac(A, domains, X, v, n)
+
+        if new_domains == False:
+            continue
+
+        if debug:
+            print("val:", v)
+            print(new_domains)
+            print()
+
+        ok = True
+        for Y in new_domains.keys():
+            if len(new_domains[Y]) == 0:
+                ok = False
+                break
+        if ok == False:
+            continue
+
+        A[X] = v
+        result = backtrack(A, new_domains, n, frames, log)
+        A.pop(X, None)
+
+        if result != "failure":
+            return result
+
+    return "failure"
+
+
 def main(R):
-
+    sys.setrecursionlimit(100000000)
     levels = read()
-
     for level in levels:
         print(level[0] + ":\n")
         Map, n = extract_map(level[1])
         A, D = extract_dics(Map, n, R)
         print_state(A, n)
-        res = backtrack(A, D, n)
+        frames = []
+        res = backtrack2(A, D, n, frames)
         print_result(res, n)
         print()
+        GUI(frames, n)
 
 
 main(2)
-
-exit()
-
-print(
-    backtrack(
-        {0: 0, 1: 1, 2: 0, 3: 1}, {
-            0: [0], 1: [1], 2: [0], 3: [1],
-            4: [0, 1], 5: [0, 1], 6: [0, 1], 7: [0, 1],
-            8: [0, 1], 9: [0, 1], 10: [0, 1], 11: [0, 1],
-            12: [0, 1], 13: [0, 1], 14: [0, 1], 15: [0, 1]
-        }, 4)
-)
-
-"""
-print("ans",
-      backtrack(
-          {0: 1, 1: 0, 2: 0}, {
-              3: [0, 1]
-          }, 2)
-      )
-
-print(
-    backtrack(
-        {}, {
-            0: [0, 1], 1: [0, 1],
-            2: [0, 1], 3: [0, 1],
-        }, 2)
-)
-"""
