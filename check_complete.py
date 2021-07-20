@@ -6,10 +6,8 @@ def check_complete(A, n):
     return (len(A.keys()) == n*n)
 
 
-def check_complete2(A, n):
-    tmp = (len(A.keys()) == n*n)
-    for i in range(n*n):
-        tmp = tmp and check_valid(A, i, n)
-        if tmp == False:
+def check_valid_state(A, n):
+    for i in A.keys():
+        if(check_valid(A, i, n) == False):
             return False
-    return tmp
+    return True

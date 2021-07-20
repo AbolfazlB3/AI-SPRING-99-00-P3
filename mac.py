@@ -54,8 +54,16 @@ def mac(A, domains, Z, zv, n, debug=False):
         if len(domain) == 1:
             A[Y] = domain[0]
             if len(old_domain) > 1:
+                colnum = [n] * n
+                rownum = [n] * n
+                for W in A.keys():
+                    colnum[W % n] -= 1
+                    rownum[W//n] -= 1
                 for W in range(n*n):
-                    if(mark[W] == False and W != Y and W != X and pair_mark.get(Y*m+W) == None):
+                    wi, wj = (W // n, W % n)
+                    yi, yj = (Y // n, Y % n)
+                    if(mark[W] == False and W != Y and W != X and pair_mark.get(Y*m+W) == None
+                            and (wi == yi or wj == yj or (A.get(W) == None and (colnum[wj] == 1 or rownum[wi] == 1)))):
                         q.append((Y, W))
                         pair_mark[Y*m+W] = True
 

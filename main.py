@@ -156,7 +156,7 @@ def backtrack2(A, domains, n, frames, log=False):
         print()
 
     if(check_complete(A, n)):
-        return A.copy() if check_complete2(A, n) else "failure"
+        return A.copy() if check_valid_state(A, n) else "failure"
 
     X = select_variable(A, domains, n)  # MRV
     D = value_ordering(A, domains, X, n, debug)  # LCV
@@ -196,54 +196,90 @@ def backtrack2(A, domains, n, frames, log=False):
     return "failure"
 
 
-def solve_forward_checking(A, D, level, n, log=True):
-    t1 = time.time_ns()
+def solve_forward_checking(A, D, level, n, show_gui=True, log=True):
     if log:
         print(level[0] + ":\n")
         print_state(A, n)
+    t1 = time.time_ns()
     frames = []
     res = backtrack(A, D, n, frames)
+    t2 = time.time_ns()
     if log:
         print_result(res, n)
         print(len(frames))
         print()
-        GUI(frames, n, level[0])
-    t2 = time.time_ns()
+    if show_gui:
+        GUI(frames, n, "FC: " + level[0])
     return len(frames), t2-t1
 
 
-def solve_mac(A, D, level, n, log=True):
-    t1 = time.time_ns()
+def solve_mac(A, D, level, n, show_gui=True, log=True):
     if log:
         print(level[0] + ":\n")
         print_state(A, n)
+    t1 = time.time_ns()
     frames = []
     res = backtrack2(A, D, n, frames)
+    t2 = time.time_ns()
     if log:
         print_result(res, n)
         print(len(frames))
         print()
-        GUI(frames, n, level[0])
-    t2 = time.time_ns()
+    if show_gui:
+        GUI(frames, n, "MAC: " + level[0])
     return len(frames), t2-t1
 
 
-def main(R):
+def main(ITERATIONS=1, log=True, R=2):
     sys.setrecursionlimit(100000000)
     levels = read()
+
+    result = {}
     for level in levels:
-        Map, n = extract_map(level[1])
-        A, D = extract_dics(Map, n, R)
-        D = forward_checking(A, D, n)
+        name, _ = level
+        result["FC_" + name] = [0, 0]
+        result["MAC_" + name] = [0, 0]
 
-        n1, t1 = solve_forward_checking(A, D, level, n, False)
+    for Q in range(ITERATIONS):
+        for level in levels:
+            name, data = level
+            Map, n = extract_map(data)
+            A, D = extract_dics(Map, n, R)
+            D = forward_checking(A, D, n)
 
-        n2, t2 = solve_mac(A, D, level, n, False)
+            n1, t1 = solve_forward_checking(A, D, level, n, False, False)
 
-        print(level[0], ":")
-        print("Forward Checking:          ", n1, "frames ", t1/1000000, "ms")
+            n2, t2 = solve_mac(A, D, level, n, False, False)
+
+            t1 /= 1000000
+            t2 /= 1000000
+
+            if log:
+                print(name, ":")
+                print("Forward Checking:          ",
+                      n1, "frames ", t1, "ms")
+                print("Maitaining Arc Consistensy:", n2,
+                      "frames ", t2, "ms\n\n")
+
+            result["FC_" + name][0] += n1
+            result["FC_" + name][1] += t1
+            result["MAC_" + name][0] += n2
+            result["MAC_" + name][1] += t2
+
+    print("\nFinal average results:\n")
+    for level in levels:
+        name, data = level
+
+        n1 = result["FC_" + name][0] // ITERATIONS
+        t1 = result["FC_" + name][1] / ITERATIONS
+        n2 = result["MAC_" + name][0] // ITERATIONS
+        t2 = result["MAC_" + name][1] / ITERATIONS
+
+        print(name, ":")
+        print("Forward Checking:          ",
+              n1, "frames ", '%.2f' % t1, "ms")
         print("Maitaining Arc Consistensy:", n2,
-              "frames ", t2/1000000, "ms\n\n")
+              "frames ", '%.2f' % t2, "ms\n\n")
 
 
-main(2)
+main(5, False)
